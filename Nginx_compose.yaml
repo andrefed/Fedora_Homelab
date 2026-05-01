@@ -1,0 +1,23 @@
+services:
+  nginx-proxy-manager:
+    image: 'docker.io/jc21/nginx-proxy-manager:latest'
+    container_name: nginx-proxy-manager
+    restart: always
+    # Explicit ports are safer than host mode
+    ports:
+      - '80:80'
+      - '81:81'
+      - '443:443'
+    environment:
+      - DISABLE_IPV6=true
+      # Podman/Fedora tip: Ensure timezones match for SSL certificates
+      - TZ=Europe/London
+    volumes:
+      - ./npm/data:/data:Z
+      - ./npm/letsencrypt:/etc/letsencrypt:Z
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true

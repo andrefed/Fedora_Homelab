@@ -1,0 +1,78 @@
+version: "3.9"
+
+networks:
+  proxy:
+    external: true
+  internal:
+    driver: bridge
+    internal: true
+
+services:
+
+  db:
+    image: docker.io/library/mariadb:11
+    container_name: nextcloud-db
+    restart: always
+    command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
+    environment:
+      MYSQL_ROOT_PASSWORD: "CHANGE_ME_ROOT_PASS"
+      MYSQL_DATABASE: nextcloud
+      MYSQL_USER: nextcloud
+      MYSQL_PASSWORD: "CHANGE_ME_DB_PASS"
+    volumes:
+      - /home/admin/server/nextcloud/db-data:/var/lib/mysql:z
+    networks:
+      - internal
+
+  redis:
+    image: docker.io/library/redis:alpine
+    container_name: nextcloud-redis
+    restart: always
+    command: redis-server --save 60 1 --loglevel warning
+    volumes:
+      - /home/admin/server/nextcloud/redis-data:/data:z
+    networks:
+      - internal
+
+  nextcloud:
+    image: docker.io/library/nextcloud:stable-apache
+    container_name: nextcloud-app
+    restart: always
+    depends_on:
+      - db
+      - redis
+    environment:
+      MYSQL_HOST: db
+      MYSQL_DATABASE: nextcloud
+      MYSQL_USER: nextcloud
+      MYSQL_PASSWORD: "CHANGE_ME_DB_PASS"
+      NEXTCLOUD_TRUSTED_DOMAINS: "nextcloud.yourdomain.com"
+      NEXTCLOUD_ADMIN_USER: "admin"
+      NEXTCLOUD_ADMIN_PASSWORD: "CHANGEME"
+      REDIS_HOST: redis
+      REDIS_HOST_PORT: 6379
+      APACHE_DISABLE_REWRITE_IP: 1
+      TRUSTED_PROXIES: "192.168.0.0/16 172.16.0.0/12 10.0.0.0/8"
+      OVERWRITEPROTOCOL: https
+      OVERWRITECLIURL: "https://nextcloud.yourdomain.com"
+      PHP_MEMORY_LIMIT: "1G"
+      PHP_UPLOAD_LIMIT: "10G"
+    volumes:
+      - /home/admin/server/nextcloud/nextcloud-data:/var/www/html:z
+      - /mnt/usbdata:/mnt/usbdata:z
+    networks:
+      - proxy
+      - internal
+
+  cron:
+    image: docker.io/library/nextcloud:stable-apache
+    container_name: nextcloud-cron
+    restart: always
+    entrypoint: /cron.sh
+    depends_on:
+      - nextcloud
+    volumes:
+      - /home/admin/server/nextcloud/nextcloud-data:/var/www/html:z
+      - /mnt/famdata:/mnt/famdata:z
+    networks:
+      - internal
