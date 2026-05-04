@@ -41,7 +41,7 @@ If your compose file uses specific version tags (e.g., `image: nextcloud:28`), `
 
 ## 2. System cleanup
 
-Your root directory (/) in Fedora Server 43 is likely growing due to accumulating system logs, package caches, old kernel versions, or container data (Docker/Podman/Flatpak) stored in /var. In Fedora, the root partition often contains /var, making it susceptible to filling up from system operations. 
+Your root directory (/) in Fedora Server is likely growing due to accumulating system logs, package caches, old kernel versions, or container data (Docker/Podman/Flatpak) stored in /var. In Fedora, the root partition often contains /var, making it susceptible to filling up from system operations. 
 
 You can mitigate this risk by installing Fedora with a customised partion (see the server setup section).
 
