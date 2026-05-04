@@ -153,7 +153,7 @@ Fill in:
  - Name: `br0`
  - Interfaces: select your main NIC (e.g. `enp3s0`, `eth0`)
  - IPv4: choose Automatic (DHCP) (simplest)
- - Set MAC address to: 52:54:00:94:48:65 (To be reserved on router for 192.168.0.99)
+ - Set MAC address and static IP (For example 52:54:00:94:48:65 and 192.168.0.4)
 
 Note: when you create the bridge your host may briefly lose network. This is normal (it’s moving the IP from NIC → bridge)
 
@@ -207,9 +207,6 @@ You'll land on the **Home Assistant onboarding screen**. Create your admin accou
 
 First access to Home Assistant:
  - `http://192.168.0.4:8123`
- - Name: Admin
- - username: admin 
- - psw = same as server
 
 ---
 
